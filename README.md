@@ -29,3 +29,5 @@ t2 = time()
 print("Installed OpenMC in {:.2f} minutes".format((t2-t1)/60.0))
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+NOTA: actualmente me encuentro en la Etapa 2 (pienso llegar a una etapa final, calculo que seran 10 etapas aprox), en la que estoy usando solo Python y conocimientos basicos (ya que openMC requiere el uso de geometrias y matematicas y fisicas mas rigidas). Apunto a llegar a la Etapa 10 donde creo en lo personal, va a estar optimizado y hecho con openMC
