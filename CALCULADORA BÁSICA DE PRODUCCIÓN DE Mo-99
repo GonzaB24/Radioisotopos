@@ -1,0 +1,336 @@
+"""
+ETAPA 2: CALCULADORA BÁSICA DE PRODUCCIÓN DE Mo-99
+Proyecto final: Optimización de Blancos para Producción de Mo-99 en Reactor INVAP
+
+CONOCIMIENTOS APLICADOS (Semanas 1-3):
+- Estructura atómica y isótopos
+- Reacciones nucleares: Mo-98(n,γ)Mo-99
+- Radiactividad y vida media
+- Propiedades básicas de materiales
+
+OBJETIVO DE ESTA ETAPA:
+Demostrar comprensión de la física básica detrás de la producción de Mo-99
+mediante cálculos fundamentales.
+"""
+
+import math
+import matplotlib.pyplot as plt
+import numpy as np
+
+# =============================================================================
+# CONSTANTES FUNDAMENTALES (Aprendidas en Semanas 1-2)
+# =============================================================================
+
+# Número de Avogadro
+AVOGADRO = 6.022e23  # átomos/mol
+
+# Vida media del Mo-99 (Semana 2: Radiactividad)
+VIDA_MEDIA_MO99 = 66.0  # horas
+
+# Constante de decaimiento del Mo-99
+LAMBDA_MO99 = 0.693 / VIDA_MEDIA_MO99  # 1/horas
+
+# =============================================================================
+# PROPIEDADES DE MATERIALES (Semana 1-2: Estructura atómica)
+# =============================================================================
+
+class MaterialMolibdeno:
+    """
+    Clase que define las propiedades del material blanco de molibdeno.
+    Basado en conocimientos de estructura atómica (Semana 1).
+    """
+
+    def __init__(self):
+        # Propiedades del MoO3 (trióxido de molibdeno)
+        self.nombre = "Trióxido de Molibdeno (MoO3)"
+        self.formula = "MoO3"
+        self.densidad = 4.69  # g/cm³ (Dato encontrado en búsqueda anterior)
+        self.masa_molar = 143.94  # g/mol (Mo: 95.94 + 3×O: 3×16.00)
+
+        # Composición isotópica del molibdeno natural (Semana 1: Isótopos)
+        self.abundancia_mo98 = 0.2417  # 24.17% de Mo-98 en molibdeno natural
+
+        # Masa atómica del Mo-98
+        self.masa_atomica_mo98 = 97.9054  # u (unidades de masa atómica)
+
+    def calcular_densidad_atomica_mo98(self):
+        """
+        Calcula cuántos átomos de Mo-98 hay por cm³ en el material MoO3.
+
+        CONCEPTO (Semana 1):
+        - En MoO3, hay 1 átomo de Mo por cada molécula
+        - Solo el 24.17% del Mo es Mo-98 (abundancia natural)
+        """
+
+        # Paso 1: Moléculas de MoO3 por cm³
+        densidad_molar = self.densidad / self.masa_molar  # mol/cm³
+        moleculas_por_cm3 = densidad_molar * AVOGADRO
+
+        # Paso 2: Átomos de Mo total por cm³ (1 Mo por molécula MoO3)
+        atomos_mo_total = moleculas_por_cm3
+
+        # Paso 3: Átomos de Mo-98 por cm³ (considerando abundancia natural)
+        atomos_mo98_por_cm3 = atomos_mo_total * self.abundancia_mo98
+
+        return atomos_mo98_por_cm3
+
+    def mostrar_propiedades(self):
+        print(f"=== MATERIAL DEL BLANCO ===")
+        print(f"Compuesto: {self.nombre}")
+        print(f"Fórmula química: {self.formula}")
+        print(f"Densidad: {self.densidad} g/cm³")
+        print(f"Masa molar: {self.masa_molar} g/mol")
+        print(f"Abundancia Mo-98: {self.abundancia_mo98*100:.2f}%")
+        print(f"Átomos Mo-98 por cm³: {self.calcular_densidad_atomica_mo98():.2e}")
+        print()
+
+# =============================================================================
+# REACCIÓN NUCLEAR (Semana 3: Neutrones y reacciones nucleares)
+# =============================================================================
+
+class ReaccionMo98:
+    """
+    Clase que modela la reacción nuclear Mo-98(n,γ)Mo-99.
+    Basado en conocimientos de reacciones nucleares (Semana 3).
+    """
+
+    def __init__(self):
+        # La reacción: Mo-98 + neutrón → Mo-99 + rayos gamma
+        self.reactivo = "Mo-98"
+        self.producto = "Mo-99"
+        self.tipo_reaccion = "(n,γ)"  # Captura neutrónica
+
+        # Sección eficaz simplificada (valor típico para neutrones térmicos)
+        # NOTA: En las otras etapas pretendo calcular esto con + detalle
+        self.seccion_eficaz = 0.13e-24  # cm² (0.13 barns, valor típico)
+
+    def calcular_tasa_reaccion(self, densidad_mo98, flujo_neutrones):
+        """
+        Calcula la tasa de producción de Mo-99.
+
+        FÓRMULA FUNDAMENTAL (Semana 3):
+        Tasa de reacción = σ × φ × N
+
+        Donde:
+        - σ = sección eficaz (probabilidad de reacción)
+        - φ = flujo de neutrones (neutrones/cm²/s)
+        - N = densidad de núcleos Mo-98 (núcleos/cm³)
+
+        Resultado: reacciones/cm³/s = núcleos Mo-99 producidos/cm³/s
+        """
+
+        tasa = self.seccion_eficaz * flujo_neutrones * densidad_mo98
+        return tasa
+
+    def mostrar_reaccion(self):
+        print(f"=== REACCIÓN NUCLEAR ===")
+        print(f"Reacción: {self.reactivo} + neutrón → {self.producto} + γ")
+        print(f"Tipo: Captura neutrónica {self.tipo_reaccion}")
+        print(f"Sección eficaz (simplificada): {self.seccion_eficaz:.2e} cm²")
+        print("Explicación: Un neutrón 'lento' es capturado por un núcleo Mo-98,")
+        print("formando Mo-99 excitado que emite rayos gamma para estabilizarse.")
+        print()
+
+# =============================================================================
+# GEOMETRÍA SIMPLIFICADA (Sin OpenMC aún)
+# =============================================================================
+
+class BlancoMolibdeno:
+    """
+    Modelo simplificado del blanco cilíndrico de molibdeno.
+    En proximas etapas pretendo usar OpenMC para geometrias + compliquetis.
+    """
+
+    def __init__(self, radio_cm, altura_cm):
+        self.radio = radio_cm  # cm
+        self.altura = altura_cm  # cm
+        self.material = MaterialMolibdeno()
+
+        # Volumen del cilindro (Geometría básica)
+        self.volumen = math.pi * self.radio**2 * self.altura  # cm³
+
+        # Masa total del blanco
+        self.masa_total = self.volumen * self.material.densidad  # gramos
+
+    def calcular_atomos_mo98_total(self):
+        """Calcula el total de átomos Mo-98 en todo el blanco."""
+        densidad_atomica = self.material.calcular_densidad_atomica_mo98()
+        total_atomos = densidad_atomica * self.volumen
+        return total_atomos
+
+    def mostrar_geometria(self):
+        """Muestra las características geométricas del blanco."""
+        print(f"=== GEOMETRÍA DEL BLANCO ===")
+        print(f"Forma: Cilindro")
+        print(f"Radio: {self.radio} cm")
+        print(f"Altura: {self.altura} cm")
+        print(f"Volumen: {self.volumen:.2f} cm³")
+        print(f"Masa total: {self.masa_total:.2f} g")
+        print(f"Átomos Mo-98 total: {self.calcular_atomos_mo98_total():.2e}")
+        print()
+
+# =============================================================================
+# CALCULADORA DE PRODUCCIÓN (Nivel básico - Etapa 2)
+# =============================================================================
+
+class CalculadoraProduccionMo99:
+    """
+    Calculadora básica para estimar la producción de Mo-99.
+    Versión simplificada que no requiere conocimientos avanzados.
+    """
+
+    def __init__(self, blanco, flujo_neutrones):
+        self.blanco = blanco
+        self.reaccion = ReaccionMo98()
+        self.flujo = flujo_neutrones  # neutrones/cm²/s
+
+        # Densidad atómica de Mo-98 en el material
+        self.densidad_mo98 = blanco.material.calcular_densidad_atomica_mo98()
+
+    def calcular_produccion_instantanea(self):
+        """
+        Calcula la tasa de producción instantánea de Mo-99.
+
+        SIMPLIFICACIÓN (Etapa 2):
+        - Asumimos flujo uniforme en todo el blanco
+        - No consideramos auto-blindaje todavía
+        - Usamos valor promedio de sección eficaz
+        """
+
+        # Tasa por cm³
+        tasa_por_cm3 = self.reaccion.calcular_tasa_reaccion(self.densidad_mo98, self.flujo)
+
+        # Tasa total en todo el blanco
+        tasa_total = tasa_por_cm3 * self.blanco.volumen
+
+        return tasa_total, tasa_por_cm3
+
+    def simular_acumulacion_mo99(self, tiempo_irradiacion_horas):
+        """
+        Simula la acumulación de Mo-99 considerando su decaimiento.
+
+        CONCEPTO (Semana 2): El Mo-99 se produce pero también decae
+        Balance: dN/dt = Producción - Decaimiento
+        """
+
+        # Tasa de producción constante (núcleos/s)
+        tasa_produccion, _ = self.calcular_produccion_instantanea()
+
+        # Arrays para graficar
+        tiempos = np.linspace(0, tiempo_irradiacion_horas, 100)
+        mo99_acumulado = []
+
+        for t in tiempos:
+            # Solución analítica de la ecuación diferencial
+            # N(t) = (P/λ) * (1 - e^(-λt))
+            # Donde P = tasa de producción, λ = constante de decaimiento
+
+            nucleos_mo99 = (tasa_produccion / LAMBDA_MO99) * (1 - math.exp(-LAMBDA_MO99 * t))
+            mo99_acumulado.append(nucleos_mo99)
+
+        return tiempos, mo99_acumulado
+
+    def convertir_a_actividad(self, nucleos_mo99):
+        """
+        Convierte número de núcleos Mo-99 a actividad (Becquerels).
+
+        CONCEPTO (Semana 2): Actividad = λ × N
+        """
+        actividad_bq = LAMBDA_MO99 * nucleos_mo99  # Becquerels
+        actividad_ci = actividad_bq / 3.7e10  # Curies
+
+        return actividad_bq, actividad_ci
+
+    def generar_reporte_basico(self, tiempo_irradiacion=48):
+        """Genera un reporte básico de la producción estimada."""
+
+        print("="*60)
+        print("REPORTE DE PRODUCCIÓN DE Mo-99 - ETAPA 2")
+        print("="*60)
+
+        # Mostrar propiedades básicas
+        self.blanco.material.mostrar_propiedades()
+        self.blanco.mostrar_geometria()
+        self.reaccion.mostrar_reaccion()
+
+        # Parámetros de irradiación
+        print(f"=== CONDICIONES DE IRRADIACIÓN ===")
+        print(f"Flujo de neutrones: {self.flujo:.2e} neutrones/cm²/s")
+        print(f"Tiempo de irradiación: {tiempo_irradiacion} horas")
+        print()
+
+        # Cálculos de producción
+        tasa_total, tasa_por_cm3 = self.calcular_produccion_instantanea()
+
+        print(f"=== RESULTADOS DE PRODUCCIÓN ===")
+        print(f"Tasa de producción inicial: {tasa_total:.2e} núcleos Mo-99/s")
+        print(f"Tasa por unidad de volumen: {tasa_por_cm3:.2e} núcleos Mo-99/cm³/s")
+
+        # Acumulación final (considerando decaimiento)
+        tiempos, mo99_acumulado = self.simular_acumulacion_mo99(tiempo_irradiacion)
+        mo99_final = mo99_acumulado[-1]
+
+        # Convertir a actividad
+        actividad_bq, actividad_ci = self.convertir_a_actividad(mo99_final)
+
+        print(f"Mo-99 acumulado después de {tiempo_irradiacion}h: {mo99_final:.2e} núcleos")
+        print(f"Actividad final: {actividad_bq:.2e} Bq ({actividad_ci:.2e} Ci)")
+        print()
+
+        return tiempos, mo99_acumulado
+
+    def generar_grafico(self, tiempos, mo99_data, tiempo_irradiacion):
+      """Genera el gráfico de acumulación de Mo-99."""
+      plt.figure(figsize=(10, 6))
+      plt.plot(tiempos, np.array(mo99_data)/1e15, 'b-', linewidth=2)
+      plt.xlabel('Tiempo de Irradiación (horas)')
+      plt.ylabel('Mo-99 Acumulado (×10¹⁵ núcleos)')
+      plt.title('Acumulación de Mo-99 vs Tiempo\n(Considerando Producción y Decaimiento)')
+      plt.grid(True, alpha=0.3)
+      plt.axhline(y=max(mo99_data)/1e15*0.95, color='r', linestyle='--',
+                  label='Aproximación al equilibrio')
+      plt.legend()
+      plt.tight_layout()
+      plt.show()
+
+
+# =============================================================================
+# FUNCIÓN PRINCIPAL DE DEMOSTRACIÓN
+# =============================================================================
+
+def ejecutar_etapa2_demo():
+    """
+    Esta funcion muestra la etapa 2 (el demo porque no es la etapa final y porque ademas estoy usando conocimientos basicos)
+    """
+
+    print("PROYECTO: Optimización de Blancos para Producción de Mo-99")
+    print("ETAPA 2: Calculadora Básica de Física Nuclear")
+    print("Basado en conocimientos de las primeras 2-3 semanas de estudio\n")
+
+    # Crear blanco de prueba (dimensiones típicas)
+    blanco_test = BlancoMolibdeno(radio_cm=2.0, altura_cm=5.0)
+
+    # Flujo típico en reactor de investigación (valor simplificado)
+    flujo_reactor = 1e13  # neutrones/cm²/s
+
+    # Crear calculadora
+    calculadora = CalculadoraProduccionMo99(blanco_test, flujo_reactor)
+
+    # Generar reporte
+    tiempos, mo99_data = calculadora.generar_reporte_basico(tiempo_irradiacion=48)
+
+    # Graficar evolución temporal
+    calculadora.generar_grafico(tiempos, mo99_data, tiempo_irradiacion=48)
+
+    print("="*60)
+    print("PRÓXIMOS PASOS (Etapas 3-10):")
+    print("- Secciones eficaces dependientes de energía")
+    print("- Geometría 3D con OpenMC")
+    print("- Simulación Monte Carlo")
+    print("- Auto-blindaje y distribuciones espaciales")
+    print("- Optimización de parámetros")
+    print("="*60)
+
+# Ejecutar demostración si se ejecuta directamente
+if __name__ == "__main__":
+    ejecutar_etapa2_demo()
